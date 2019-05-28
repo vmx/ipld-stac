@@ -1,0 +1,22 @@
+{
+  "name": "ipld-stac",
+  "version": "0.1.0",
+  "description": "STAC on IPLD",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "IPLD",
+    "DWEB",
+    "STAC"
+  ],
+  "author": "Volker Mische <volker.mische@gmail.com>",
+  "license": "(MIT OR Apache-2.0)",
+  "dependencies": {
+    "@ipld/stack": "git+https://github.com/ipld/js-ipld-stack.git",
+    "debug": "^4.1.1",
+    "neodoc": "^2.0.2"
+  }
+}
