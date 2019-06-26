@@ -33,9 +33,8 @@ export const modifyStac = (data) => {
         // If no title is given use the filename as the link itself becomes
         // a CID
         if (!('title' in link)) {
-          const title = link.href.split('/').pop().split('.').shift()
-          link.title = title
-          debug(`no title given use file "${title}" as title`)
+          link.title = link.href
+          debug(`no title given use file "${link.title}" as title`)
         }
         //link.href = 'some-cid'
         links.push(link)
