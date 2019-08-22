@@ -15,7 +15,7 @@
   "author": "Volker Mische <volker.mische@gmail.com>",
   "license": "(MIT OR Apache-2.0)",
   "dependencies": {
-    "@ipld/stack": "git+https://github.com/ipld/js-ipld-stack.git",
+    "@ipld/block": "^2.0.4",
     "debug": "^4.1.1",
     "multicodec": "^0.5.3",
     "neodoc": "^2.0.2"

@@ -4,7 +4,7 @@ import { promisify } from 'util'
 
 import Debug from 'debug'
 const debug = Debug('ipld-stac:walk')
-import Block from '@ipld/stack/src/block.js'
+import Block from '@ipld/block'
 import multicodec from 'multicodec'
 import neodoc from 'neodoc'
 
