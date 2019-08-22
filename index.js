@@ -46,11 +46,9 @@ const partition = (list, isValid) => {
 
 /// Modify the input STAC file to make it work with IPLD
 const walk = async (dir) => {
-  //console.log(dir)
   const files = await fs.readdir(dir, { withFileTypes: true })
   //const [subs, files] = partition(ls, (file) => file.isDirectory())
   const subs = files.filter((file) => file.isDirectory())
-  //console.log('files:', files)
   // There are subdirectories, keep traversing down
   if (subs.length > 0) {
     // The items that will be returned. Keys are the filenames, values are
@@ -91,9 +89,7 @@ const walk = async (dir) => {
       const cid = await putData(data)
       items[jsonFile.name] = cid
     }
-    //console.log('items2:', items)
     const cidsForLogging = Object.values(items).map((item) => item.toString('base32'))
-    console.log('items:', cidsForLogging)
 
     return items
   } else {
@@ -111,7 +107,6 @@ const walk = async (dir) => {
     // Key is the filename, value is the CID of that file (encodec as CBOR)
     const items = {}
     for (const jsonFile of jsonFiles) {
-      //console.log(jsonFile)
       const file = await fs.readFile(path.join(dir, jsonFile.name))
       const data = JSON.parse(file)
       modifyStac(data)
@@ -153,7 +148,9 @@ const main = async () => {
 
   await fs.mkdir(out_dir, { recursive: true })
 
-  walk(args.STAC_DIR)
+  const items = await walk(args.STAC_DIR)
+  const rootCid = Object.values(items).pop()
+  console.log(`root CID: ${rootCid}`)
 }
 
 main(process.argv).catch((error) => {
