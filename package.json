@@ -17,9 +17,6 @@
   "dependencies": {
     "@ipld/stack": "git+https://github.com/ipld/js-ipld-stack.git",
     "debug": "^4.1.1",
-    "ipfs-block-service": "^0.15.2",
-    "ipfs-repo": "^0.26.6",
-    "ipld": "^0.24.1",
     "multicodec": "^0.5.3",
     "neodoc": "^2.0.2"
   }

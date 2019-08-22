@@ -5,9 +5,6 @@ import { promisify } from 'util'
 import Debug from 'debug'
 const debug = Debug('ipld-stac:walk')
 import Block from '@ipld/stack/src/block.js'
-import Ipld from 'ipld'
-import IpfsRepo from 'ipfs-repo'
-import IpfsBlockService from 'ipfs-block-service'
 import multicodec from 'multicodec'
 import neodoc from 'neodoc'
 
@@ -20,43 +17,9 @@ arguments:
     DIR The directory to start walking (root of the STAC catalog)
 `
 
-const initIpld = promisify((ipfsRepoPath, callback) => {
-  const repo = new IpfsRepo(ipfsRepoPath)
-  //repo.init({}, (err) => {
-  //  if (err) {
-  //    return callback(err)
-  //  }
-    repo.open((err) => {
-      if (err) {
-        return callback(err)
-      }
-      const blockService = new IpfsBlockService(repo)
-      const ipld = new Ipld({blockService: blockService})
-      return callback(null, ipld)
-    })
-  //})
-})
-
-//initIpld('/tmp/ifpsrepo', (err, ipld) => {
-//  // Do something with the `ipld`, e.g. `ipld.get(…)`
-//})
-
-//const toCid = async (data) => {
-//  let block = Block.encoder(data, 'dag-cbor')
-//  //console.log(await block.decode())
-//  return block.cid()
-//}
-
-
-// Putting into an IPFS repo
-//const putData = async (ipld, data) => {
-//  const cid = await ipld.put(data, multicodec.DAG_CBOR)
-//  return cid
-//}
-
 // Putting it into a local directory
 const OUTPUT_DIR = '/home/vmx/src/misc/stac/ipld-stac/out'
-const putData = async (_ipld, data) => {
+const putData = async (data) => {
   const block = Block.encoder(data, 'dag-cbor')
   const encoded = await block.encode()
   const cid = await block.cid()
@@ -80,7 +43,7 @@ const partition = (list, isValid) => {
 }
 
 /// Modify the input STAC file to make it work with IPLD
-const walk = async (dir, ipld) => {
+const walk = async (dir) => {
   //console.log(dir)
   const files = await fs.readdir(dir, { withFileTypes: true })
   //const [subs, files] = partition(ls, (file) => file.isDirectory())
@@ -98,7 +61,7 @@ const walk = async (dir, ipld) => {
     for (const sub of subs) {
       //console.log('vmx: sub:', sub)
       // The items are a dictionary with filenames as keys and a CID as value
-      const subitems = await walk(path.join(dir, sub.name), ipld)
+      const subitems = await walk(path.join(dir, sub.name))
       //console.log('subitems:', subitems)
 
       // Add items from sub-directory to the list of items, so that files
@@ -127,7 +90,7 @@ const walk = async (dir, ipld) => {
         })
       }
       //const cid = await toCid(data)
-      const cid = await putData(ipld, data)
+      const cid = await putData(data)
       items[jsonFile.name] = cid
     }
     //console.log('items2:', items)
@@ -160,7 +123,7 @@ const walk = async (dir, ipld) => {
       // There are no links, hence we can calculate the CID of it right away
       if (data.links.length === 0) {
         //const cid = await toCid(data)
-        const cid = await putData(ipld, data)
+        const cid = await putData(data)
         items[jsonFile.name] = cid
       } else {
       // There are links to other objects that should be stored in IPLD, we
@@ -178,7 +141,7 @@ const walk = async (dir, ipld) => {
         return link
       })
       //const cid = await toCid(data)
-      const cid = await putData(ipld, data)
+      const cid = await putData(data)
       items[name] = cid
     }
     //console.log('items:', items)
@@ -188,9 +151,8 @@ const walk = async (dir, ipld) => {
 
 const main = async () => {
   const args = neodoc.run(helpText)
-  const ipld = await initIpld('/tmp/ipldrepostac')
 
-  walk(args.DIR, ipld)
+  walk(args.DIR)
 }
 
 main(process.argv).catch((error) => {
