@@ -29,7 +29,6 @@ const putData = async (data) => {
 }
 
 
-
 /// Check if JSON data is a STAC Catalog or not
 const isCatalog = (data) => {
   return !('asset' in data)
@@ -59,10 +58,8 @@ const walk = async (dir) => {
     const allsubitems = {}
 
     for (const sub of subs) {
-      //console.log('vmx: sub:', sub)
       // The items are a dictionary with filenames as keys and a CID as value
       const subitems = await walk(path.join(dir, sub.name))
-      //console.log('subitems:', subitems)
 
       // Add items from sub-directory to the list of items, so that files
       // referencing those items can use those CIDs
@@ -79,7 +76,6 @@ const walk = async (dir) => {
     for (const jsonFile of jsonFiles) {
       const file = await fs.readFile(path.join(dir, jsonFile.name))
       const data = JSON.parse(file)
-      //const modified = modifyStac(data)
       modifyStac(data)
       // There are links to the sub-directories, replace those links with
       // CIDs
@@ -89,7 +85,6 @@ const walk = async (dir) => {
           return link
         })
       }
-      //const cid = await toCid(data)
       const cid = await putData(data)
       items[jsonFile.name] = cid
     }
@@ -104,7 +99,6 @@ const walk = async (dir) => {
     const jsonFiles = files.filter((file) => {
       return file.isFile() && file.name.endsWith('.json')
     })
-    //console.log('vmx: jsonfiles:', jsonFiles)
 
     // Key is the filename, value is the modified (already adapted for IPLD)
     // contents of the file. This is used to replace the links with the right
@@ -117,9 +111,7 @@ const walk = async (dir) => {
       //console.log(jsonFile)
       const file = await fs.readFile(path.join(dir, jsonFile.name))
       const data = JSON.parse(file)
-      //const modified = modifyStac(data)
       modifyStac(data)
-      //console.log('data after modification: links:', data.links)
       // There are no links, hence we can calculate the CID of it right away
       if (data.links.length === 0) {
         //const cid = await toCid(data)
@@ -140,11 +132,9 @@ const walk = async (dir) => {
         link.href = items[link.href]
         return link
       })
-      //const cid = await toCid(data)
       const cid = await putData(data)
       items[name] = cid
     }
-    //console.log('items:', items)
     return items
   }
 }

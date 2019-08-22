@@ -42,37 +42,6 @@ export const modifyStac = (data) => {
     }
     return links
   }, []);
-
-
-  //// Make relative links fixed identifiers, so that they hash always the same
-  //for (const link of data.links) {
-  //  switch (link.rel) {
-  //    case 'self':
-  //     //link.href = '.'
-  //     link = undefined
-  //     break
-  //    case 'root':
-  //     link.href = '/'
-  //     break
-  //    case 'parent':
-  //     link.href = '..'
-  //     break
-  //    case 'collection':
-  //    case 'item':
-  //      // If no title is given use the filename as the link itself becomes
-  //      // a CID
-  //      if (!('title' in link)) {
-  //        const title = link.href.split('/').pop().split('.').shift()
-  //        link.title = title
-  //        debug(`not title given use file "${title}" as title`)
-  //      }
-  //      link.href = 'some-cid'
-  //      break
-  //  }
-  //
-  //}
-
-  //console.log(data)
 }
 
 const main = async () => {
@@ -82,7 +51,3 @@ const main = async () => {
   const data = JSON.parse(file)
   modifyStac(data)
 }
-
-//main(process.argv).catch((error) => {
-// console.error(error)
-//})
