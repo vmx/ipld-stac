@@ -47,10 +47,24 @@ const initIpld = promisify((ipfsRepoPath, callback) => {
 //  return block.cid()
 //}
 
-const putData = async (ipld, data) => {
-  const cid = await ipld.put(data, multicodec.DAG_CBOR)
+
+// Putting into an IPFS repo
+//const putData = async (ipld, data) => {
+//  const cid = await ipld.put(data, multicodec.DAG_CBOR)
+//  return cid
+//}
+
+// Putting it into a local directory
+const OUTPUT_DIR = '/home/vmx/src/misc/stac/ipld-stac/out'
+const putData = async (_ipld, data) => {
+  const block = Block.encoder(data, 'dag-cbor')
+  const encoded = await block.encode()
+  const cid = await block.cid()
+  await fs.writeFile(path.join(OUTPUT_DIR, cid.toString('base32')), encoded, {
+    encoding: 'binary' })
   return cid
 }
+
 
 
 /// Check if JSON data is a STAC Catalog or not
@@ -117,7 +131,7 @@ const walk = async (dir, ipld) => {
       items[jsonFile.name] = cid
     }
     //console.log('items2:', items)
-    const cidsForLogging = Object.values(items).map((item) => item.toString())
+    const cidsForLogging = Object.values(items).map((item) => item.toString('base32'))
     console.log('items:', cidsForLogging)
 
     return items
