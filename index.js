@@ -11,19 +11,22 @@ import neodoc from 'neodoc'
 import { modifyStac } from './modify-stac.js'
 
 const helpText = `
-usage: ipld-stac DIR
+usage: ipld-stac STAC_DIR [OUT_DIR]
 
 arguments:
-    DIR The directory to start walking (root of the STAC catalog)
+    STAC_DIR The directory that contains a STAC catalog
+    OUT_DIR The directory where the IPLD objects should be stored [default: ./out]
 `
 
+// Gets populated by the command line arguments
+let out_dir
+
 // Putting it into a local directory
-const OUTPUT_DIR = '/home/vmx/src/misc/stac/ipld-stac/out'
 const putData = async (data) => {
   const block = Block.encoder(data, 'dag-cbor')
   const encoded = await block.encode()
   const cid = await block.cid()
-  await fs.writeFile(path.join(OUTPUT_DIR, cid.toString('base32')), encoded, {
+  await fs.writeFile(path.join(out_dir, cid.toString('base32')), encoded, {
     encoding: 'binary' })
   return cid
 }
@@ -142,7 +145,15 @@ const walk = async (dir) => {
 const main = async () => {
   const args = neodoc.run(helpText)
 
-  walk(args.DIR)
+  out_dir = args.OUT_DIR
+  // neodoc doesn't support default values for positional arguments
+  if (out_dir === undefined) {
+    out_dir = './out'
+  }
+
+  await fs.mkdir(out_dir, { recursive: true })
+
+  walk(args.STAC_DIR)
 }
 
 main(process.argv).catch((error) => {
