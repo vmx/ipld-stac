@@ -3,7 +3,7 @@ STAC on IPLD
 
 Store your [STAC](https://stacspec.org/) catalog in IPLD.
 
-At the moment it stores CBOR encoded files in a single directory, where the filename is the base21 encoded CID of the file contents.
+At the moment it stores CBOR encoded files in a single directory, where the filename is the base32 encoded CID of the file contents.
 
 Install
 -------
